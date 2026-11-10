@@ -15,7 +15,23 @@ export default function RootLayout() {
         return coursework.find((item) => String(item.id) === String(id));
     }
 
-    const contextValue = { coursework, getCourseworkById };
+    // Add a new item with the next free id.
+    async function addCoursework(data) {
+        const nextId = Math.max(0, ...coursework.map((item) => item.id)) + 1;
+        setCoursework([...coursework, { id: nextId, ...data }]);
+        return true;
+    }
+
+    // Replace the fields of one item, keep its id.
+    async function updateCoursework(id, data) {
+        setCoursework(coursework.map((item) => (item.id === id ? { ...item, ...data } : item)));
+        return true;
+    }
+
+    // Unique course names, offered as quick picks in the form.
+    const courseNames = [...new Set(coursework.map((item) => item.course))].sort();
+
+    const contextValue = { coursework, courseNames, getCourseworkById, addCoursework, updateCoursework };
 
     return (
         <CourseworkProvider value={contextValue}>
@@ -32,6 +48,8 @@ export default function RootLayout() {
                 <Stack.Screen name="login" options={{ title: "Log in" }} />
                 <Stack.Screen name="coursework" options={{ title: "My Coursework" }} />
                 <Stack.Screen name="details/[id]" options={{ title: "Details" }} />
+                <Stack.Screen name="add" options={{ title: "Add coursework" }} />
+                <Stack.Screen name="edit/[id]" options={{ title: "Edit coursework" }} />
             </Stack>
         </CourseworkProvider>
     );

@@ -25,6 +25,10 @@ export default function DetailsScreen() {
         }
     }
 
+    function openEdit() {
+        router.push({ pathname: "/edit/[id]", params: { id: item.id } });
+    }
+
     if (!item) {
         return (
             <AppScreen>
@@ -63,6 +67,8 @@ export default function DetailsScreen() {
                 <InfoRow icon="flag-outline" label="Status" value={item.status} />
                 <InfoRow icon="create-outline" label="Notes" value={item.notes ? item.notes : "No notes"} isLast />
             </View>
+
+            <AppButton text="Edit" onPress={openEdit} />
         </AppScreen>
     );
 }

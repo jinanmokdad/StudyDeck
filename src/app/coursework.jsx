@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import AppButton from "../components/AppButton";
 import AppScreen from "../components/AppScreen";
 import CourseworkCard from "../components/CourseworkCard";
 import EmptyState from "../components/EmptyState";
@@ -44,6 +45,10 @@ export default function CourseworkScreen() {
         router.push({ pathname: "/details/[id]", params: { id: item.id } });
     }
 
+    function openAdd() {
+        router.push("/add");
+    }
+
     function clearSearchAndFilter() {
         setSearchText("");
         setSelectedStatus("All");
@@ -57,6 +62,8 @@ export default function CourseworkScreen() {
                     icon="sparkles-outline"
                     title="No coursework yet"
                     message="Add your first assignment, quiz, project or exam to start tracking it."
+                    actionText="Add coursework"
+                    onAction={openAdd}
                 />
             );
         }
@@ -87,6 +94,8 @@ export default function CourseworkScreen() {
                 <SummaryBox label="Done" count={doneCount} />
             </View>
 
+            <AppButton text="+ Add coursework" onPress={openAdd} style={styles.addButton} />
+
             <SearchBar value={searchText} onChangeText={setSearchText} placeholder="Search by title or course" />
             <StatusFilter options={FILTER_OPTIONS} selected={selectedStatus} onChange={setSelectedStatus} />
 
@@ -113,5 +122,6 @@ const styles = StyleSheet.create({
     summaryBox: { flex: 1, backgroundColor: colors.card, borderRadius: 14, paddingVertical: 12, alignItems: "center", borderWidth: 1, borderColor: colors.border },
     summaryCount: { fontSize: 24, fontWeight: "800", color: colors.primaryDark },
     summaryLabel: { fontSize: 13, color: colors.textMuted, marginTop: 2 },
+    addButton: { marginTop: 0, marginBottom: 14 },
     resultCount: { fontSize: 14, color: colors.textMuted, marginTop: 12, marginBottom: 10 },
 });
