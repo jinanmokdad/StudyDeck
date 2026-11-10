@@ -6,11 +6,13 @@ import AppScreen from "../components/AppScreen";
 import AppTextInput from "../components/AppTextInput";
 import FormField from "../components/FormField";
 import colors from "../constants/colors";
+import { useCoursework } from "../context/CourseworkContext";
 import MOCK_USER from "../data/mockUser";
 import getFieldErrors from "../validation/getFieldErrors";
 import loginSchema from "../validation/loginSchema";
 
 export default function LoginScreen() {
+    const { logIn } = useCoursework();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [fieldErrors, setFieldErrors] = useState({});
@@ -34,7 +36,9 @@ export default function LoginScreen() {
             return;
         }
 
-        // 3. Success: replace so Back cannot return to the login screen.
+        // 3. Success: mark the user as logged in, then replace so Back
+        //    cannot return to the login screen.
+        logIn();
         router.replace("/coursework");
     }
 

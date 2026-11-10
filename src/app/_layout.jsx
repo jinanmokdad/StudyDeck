@@ -15,6 +15,10 @@ export default function RootLayout() {
     const [isLoading, setIsLoading] = useState(true);
     const [loadError, setLoadError] = useState("");
 
+    // Mock session: true after a successful login, false after logout.
+    // Kept in memory only, so the user logs in again after restarting the app.
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
     // Feedback banner shown after an action, e.g. "Coursework added".
     const [feedback, setFeedback] = useState({ message: "", type: "success" });
 
@@ -107,6 +111,9 @@ export default function RootLayout() {
         updateCoursework,
         deleteCoursework,
         showMessage,
+        isLoggedIn,
+        logIn: () => setIsLoggedIn(true),
+        logOut: () => setIsLoggedIn(false),
     };
 
     return (
@@ -123,11 +130,14 @@ export default function RootLayout() {
                 >
                     <Stack.Screen name="index" options={{ headerShown: false }} />
                     <Stack.Screen name="login" options={{ title: "Log in" }} />
-                    <Stack.Screen name="coursework" options={{ title: "My Coursework", headerBackVisible: false }} />
-                    <Stack.Screen name="details/[id]" options={{ title: "Details" }} />
-                    <Stack.Screen name="add" options={{ title: "Add coursework" }} />
-                    <Stack.Screen name="edit/[id]" options={{ title: "Edit coursework" }} />
-                    <Stack.Screen name="profile" options={{ title: "Profile" }} />
+                    {/* These screens can only be opened after logging in. */}
+                    <Stack.Protected guard={isLoggedIn}>
+                        <Stack.Screen name="coursework" options={{ title: "My Coursework", headerBackVisible: false }} />
+                        <Stack.Screen name="details/[id]" options={{ title: "Details" }} />
+                        <Stack.Screen name="add" options={{ title: "Add coursework" }} />
+                        <Stack.Screen name="edit/[id]" options={{ title: "Edit coursework" }} />
+                        <Stack.Screen name="profile" options={{ title: "Profile" }} />
+                    </Stack.Protected>
                 </Stack>
                 <FeedbackBanner message={feedback.message} type={feedback.type} onDismiss={hideMessage} />
             </View>

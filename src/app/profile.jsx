@@ -8,7 +8,7 @@ import MOCK_USER from "../data/mockUser";
 import { formatDate, getDueLabel } from "../utils/dates";
 
 export default function ProfileScreen() {
-    const { coursework } = useCoursework();
+    const { coursework, logOut } = useCoursework();
 
     const total = coursework.length;
     const doneCount = coursework.filter((item) => item.status === "Done").length;
@@ -21,13 +21,14 @@ export default function ProfileScreen() {
         .filter((item) => item.status !== "Done")
         .sort((a, b) => a.dueDate.localeCompare(b.dueDate))[0];
 
-    function logOut() {
+    function handleLogOut() {
         // Close every screen above the first one, then replace it with Login,
         // so Back cannot return to the app after logging out.
         if (router.canDismiss()) {
             router.dismissAll();
         }
         router.replace("/login");
+        logOut(); // the app screens are now protected again
     }
 
     return (
@@ -71,7 +72,7 @@ export default function ProfileScreen() {
                 )}
             </View>
 
-            <AppButton text="Log out" onPress={logOut} variant="danger" style={styles.logout} />
+            <AppButton text="Log out" onPress={handleLogOut} variant="danger" style={styles.logout} />
         </AppScreen>
     );
 }
