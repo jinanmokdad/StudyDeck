@@ -1,115 +1,125 @@
 # StudyDeck
 
-StudyDeck is a React Native app (Expo + Expo Router). It keeps all of a university student's assignments, quizzes, projects and exams in one place, so nothing gets forgotten and the most urgent work is always at the top.
+StudyDeck is a small mobile app I built for keeping track of coursework: assignments, quizzes, projects and exams. It's made with React Native, Expo and Expo Router for CSC 0279 Mobile Application Development (Project 1, individual).
 
-- **Users:** university students taking several courses at once (for example, a Haigazian student with five courses).
-- **Problem:** deadlines are scattered across Moodle, syllabi, WhatsApp groups and class announcements, so it is easy to miss a due date or notice too late that a heavily weighted exam is coming.
-- **Solution:** one searchable, filterable list of coursework. Each item has a course, a due date, a grade weight and a status, and the list stays on the phone after the app is closed.
+## Why I made it
 
-CSC 0279 Mobile Application Development · Project 1 (individual)
+Every semester my deadlines end up spread over Moodle, the course syllabi, WhatsApp groups and whatever the instructor says at the end of class. It's easy to forget something, or to notice too late that an exam worth 25% is next week.
 
----
+StudyDeck puts everything in one list. For each item I save the course, the due date, how much it counts toward the final grade, and where I am with it (To do, In progress or Done). The list is sorted so the most urgent work is always at the top, and everything stays saved on the phone after the app is closed.
 
-## Mock login credentials
+It's meant for university students juggling several courses at once, like a Haigazian student with five courses in one semester.
 
-| Email | Password |
-|---|---|
-| `student@studydeck.com` | `study2026` |
+## Logging in
 
-The login screen also shows these credentials in a "Demo account" box.
+The login is a mock, so there's only one account:
 
----
+- **Email:** `student@studydeck.com`
+- **Password:** `study2026`
 
-## Setup and running
+These are also shown in a small "Demo account" box on the login screen.
 
-Requirements: Node.js 20 or later, npm, and the **Expo Go** app on a phone (or an Android emulator / iOS simulator).
+## How to run it
+
+You need Node.js (version 20 or newer) and the **Expo Go** app on your phone.
 
 ```bash
-# 1. Install dependencies (uses package-lock.json)
 npm install
-
-# 2. Start the development server
 npx expo start
 ```
 
-Then scan the QR code with Expo Go (Android) or the Camera app (iOS). Press `a` to open an Android emulator or `i` to open an iOS simulator.
+Scan the QR code. On iPhone, use the Camera app; on Android, scan it from inside Expo Go. The phone and the computer need to be on the same Wi-Fi.
 
-**Tested with:** Expo Go on **[Android / iOS — fill in your phone model and OS version]**. Expo SDK 58 and Expo Router 58. Every library used (including `@react-native-async-storage/async-storage` 2.2.0) is bundled in Expo Go, so no development build is needed.
+If the phone can't connect (this happened to me), use a tunnel instead. It needs a free Expo account:
 
-> The first launch loads 8 sample items. After that, the app always loads what you saved. To start over with the sample data, clear the Expo Go app's storage or uninstall and reinstall the project in Expo Go.
+```bash
+npx expo login
+npx expo start --tunnel
+```
 
----
+**Tested on:** Expo Go on an **iPhone (iOS)**. I used Expo Go, not a development build. The project uses **Expo SDK 58**, which matches the current version of Expo Go. Everything the app uses, including AsyncStorage, already comes with Expo Go.
 
-## Implemented features
+The first time the app opens, it loads 8 sample items. After that it always loads whatever was saved last.
 
-**Navigation (Expo Router, Stack)**
-- Welcome → Login → My Coursework. Both steps use `router.replace`, so Back cannot return to Welcome or Login after logging in.
-- My Coursework → Details (`/details/[id]`) → Edit (`/edit/[id]`); My Coursework → Add (`/add`); My Coursework → Profile (person icon in the header).
-- Log out (on Profile) calls `router.dismissAll()` and then `router.replace("/login")`. The app screens are wrapped in `Stack.Protected` and can only be opened while logged in.
-- Back always goes to the previous logical screen. Saving an edit returns to Details, and deleting returns to the list.
+## What the app does
 
-**Coursework management**
-- 8 realistic mock items across 4 courses, with mixed types, statuses and due dates in November and December 2026.
-- List cards show the title, course, type, weight, due date, a status badge and a days-left label. Items due within 3 days or overdue are highlighted in red.
-- Summary counts for To do, In progress and Done.
-- **Search** by title or course name, plus **status filter** chips (All / To do / In progress / Done).
-- **Details** screen with a countdown, all fields and notes.
-- **Add** and **Edit** use the same `CourseworkForm` component. Edit opens with the current values filled in.
-- **Delete** asks for confirmation in a `ConfirmDialog` first.
-- Quick status button on Details (To do → In progress → Done → reopen).
-- Profile shows the mock student, a progress bar, counts per status and the next deadline.
+**Screens and navigation**
 
-**Validation (Zod)**
-- `src/validation/loginSchema.js`: email is required and must be valid; password is required and must be at least 6 characters. Valid input is then compared with the predefined account in `src/data/mockUser.js`.
-- `src/validation/courseworkSchema.js`: title and course are required (80 characters max); type and status must be one of the allowed values; the due date must be a real `YYYY-MM-DD` date (so `2026-02-30` is rejected); weight must be a number from 0 to 100; notes can be up to 300 characters.
-- Each error is shown under its field and the field gets a red border. Invalid data is never saved.
+There are 7 screens: Welcome, Login, My Coursework, Details, Add, Edit and Profile.
 
-**Persistence (AsyncStorage)**
-- The whole list is stored as JSON under the key `studydeck:coursework` (`src/storage/courseworkStorage.js`).
-- On startup the root layout loads the saved list while a spinner is shown. The sample data is used only when nothing has been saved yet (`null`). A saved empty list `[]` stays empty after a restart.
-- Every add, edit and delete is **saved first and then applied to state**. If saving fails, the screen keeps the old data and shows an error.
+- Welcome and Login use `router.replace`, so after logging in you can't go Back to them.
+- From My Coursework you can open an item's details, add a new item, or open your profile with the person icon at the top.
+- Saving an edit takes you back to Details. Deleting takes you back to the list.
+- Logging out from Profile clears the navigation history and goes to Login. The main screens are inside `Stack.Protected`, so they can't be opened again until you log in.
 
-**Feedback states**
-- Loading spinner while saved data is read; spinner on the save, delete and status buttons while they work.
-- Empty collection: "No coursework yet" with an Add button. No search results: "No matching coursework" with a "Clear search and filter" button.
-- Load failure: an error message with a "Try again" button. Save or delete failure: an inline error message.
-- Success banner after adding, saving, deleting or changing status.
+**Working with coursework**
 
----
+- The list shows each item's title, course, type, weight, due date and status, plus how many days are left. Anything due within 3 days (or overdue) is marked in red.
+- At the top there are counts for To do, In progress and Done.
+- You can search by title or course name, and filter by status.
+- The Details screen shows everything about one item, with a countdown to the due date.
+- Adding and editing use the same form. When editing, the form is already filled in with the current values.
+- Deleting asks for confirmation first.
+- There's a quick button on Details to move an item along: To do → In progress → Done.
+- Profile shows overall progress, counts for each status, and the next deadline.
 
-## Project structure
+**Validation**
+
+I used Zod for the forms:
+
+- **Login:** the email has to be valid, and the password has to be at least 6 characters. If the format is fine but the details don't match the mock account, it says the email or password is incorrect.
+- **Add/Edit:**
+  - Title and course are required.
+  - The due date has to be a real date in `YYYY-MM-DD` format, so `2026-02-30` won't pass.
+  - The weight has to be a number from 0 to 100.
+
+Each error shows up under its own field, and nothing is saved until the form is valid.
+
+**Saving data**
+
+The whole list is saved with AsyncStorage under the key `studydeck:coursework`.
+
+- When the app starts, it loads the saved list and shows a spinner while it waits.
+- The sample data is only used if nothing has ever been saved. If you delete everything, the list stays empty after a restart.
+- Every change is saved first and only then shown on screen. So if saving fails, the app keeps the old data and shows an error message instead of pretending it worked.
+
+**Messages and empty states**
+
+- Different messages for "you have no coursework yet" and "nothing matches your search".
+- A loading spinner while saved data is being read.
+- A green message after adding, saving, deleting or changing status.
+- An error message (with a "Try again" button where it makes sense) if loading or saving fails.
+
+## How the code is organised
 
 ```
 src/
-  app/                     ← Expo Router routes only (screens)
-    _layout.jsx            root Stack, shared state, AsyncStorage load/save, login flag, feedback banner
-    index.jsx              1 Welcome
-    login.jsx              2 Login
-    coursework.jsx         3 My Coursework (list, search, filter)
-    details/[id].jsx       4 Details (status, edit, delete)
-    add.jsx                5 Add item
-    edit/[id].jsx          6 Edit item
-    profile.jsx            7 Profile and Log out
-  components/              reusable UI (outside the route folder)
-    AppButton, AppScreen, AppTextInput, FormField, CourseworkCard, CourseworkForm,
-    StatusBadge, StatusFilter, SearchBar, OptionPicker, EmptyState, LoadingView,
-    ConfirmDialog, FeedbackBanner, InfoRow, HeaderIconButton
-  constants/               colors.js, coursework.js (types, statuses, badge colours, icons)
-  context/                 CourseworkContext.js (passes the layout's state to the screens)
-  data/                    mockCoursework.js, mockUser.js
-  storage/                 courseworkStorage.js (AsyncStorage load/save)
-  utils/                   dates.js (parse, days left, labels, formatting)
-  validation/              loginSchema.js, courseworkSchema.js, getFieldErrors.js
+  app/            the screens (Expo Router routes only)
+    _layout.jsx   root Stack, shared state, loading and saving, login flag
+    index.jsx     Welcome
+    login.jsx     Login
+    coursework.jsx  My Coursework
+    details/[id].jsx  Details
+    add.jsx       Add
+    edit/[id].jsx Edit
+    profile.jsx   Profile and Log out
+  components/     reusable pieces (buttons, inputs, cards, the form, dialogs...)
+  constants/      colours, coursework types and statuses
+  context/        passes the shared state from the layout to the screens
+  data/           mock coursework and the mock user
+  storage/        AsyncStorage load and save
+  utils/          date helpers (days left, formatting)
+  validation/     Zod schemas
 docs/
-  screen-flow.png          screen-flow diagram
-  screenshots/             screenshots of the main screens
+  screen-flow.png
+  screenshots/
 ```
 
-**Where the state lives:** the coursework array is kept in `src/app/_layout.jsx`, the parent of every screen. The layout passes the data and the functions that change it (`addCoursework`, `updateCoursework`, `deleteCoursework`, `showMessage`, `logIn`, `logOut`) to the screens through `CourseworkContext`. Screens pass data and callbacks on to components through props. For example, `CourseworkCard` receives `item` and `onPress`, and `CourseworkForm` receives `initialValues`, `onSubmit` and `onCancel`. Screen-only state, such as the search text and selected filter, stays in that screen.
+The coursework list lives in `src/app/_layout.jsx`, the parent of all the screens. The add, edit and delete functions live there too, and are passed down to the screens through a context. So when I add or edit something, the list, the details and the counts all update together.
 
----
+Smaller pieces get their data through props. For example, `CourseworkCard` receives an `item` and an `onPress` callback, and the list screen decides what happens when a card is tapped. Things that only matter to one screen, like the search text, stay in that screen.
 
-## Screen-flow diagram
+## Screen flow
 
 ![Screen flow](docs/screen-flow.png)
 
@@ -131,32 +141,27 @@ docs/
 |---|---|---|---|
 | ![](docs/screenshots/16-delete-confirm.png) | ![](docs/screenshots/17-list-after-delete.png) | ![](docs/screenshots/18-profile.png) | ![](docs/screenshots/21-empty-list.png) |
 
-*These screenshots were taken from the web build at a phone-sized viewport. Replace them with screenshots from your own device if you prefer.*
-
----
-
 ## Known limitations
 
-- **Mock authentication only.** There is a single hard-coded account and no real security. The logged-in flag is kept in memory, so you log in again after every restart. Your coursework data does persist.
-- **The due date is typed as text** (`YYYY-MM-DD`) rather than picked from a native date picker. Zod checks that it is a real date.
-- **No reminders or notifications** for upcoming deadlines.
-- **One device only.** Data lives in AsyncStorage on the phone, with no backend or sync (planned for the final project).
-- **No undo** after deleting. The confirmation dialog is the safeguard.
-- Course names are free text. Quick-pick chips help keep them consistent, but courses are not managed separately.
-- The app targets phones in portrait orientation. It runs on the web for testing, but web is not a supported platform.
+- **Mock login only.** There's one hard-coded account and no real security. You also have to log in again every time the app restarts; your coursework stays saved.
+- **Typed due dates.** The date is typed in as `YYYY-MM-DD` instead of being picked from a calendar.
+- **No reminders or notifications** before deadlines.
+- **One phone only.** Everything is stored on the device itself, with no account sync. Connecting a backend is planned for the final project.
+- **No undo** after deleting. The confirmation dialog is the only safety net.
+- Course names are typed freely. The form suggests existing ones to keep them consistent.
 
----
+## How I used AI
 
-## AI-use statement
+I used an AI assistant a lot in this project. I gave it my approved proposal and the MyTasks examples from class, and it wrote the first version of most of the code (the screens, components, Zod schemas and AsyncStorage logic), the screen-flow diagram and a draft of this README.
 
-> **Edit this section so it describes honestly how you used AI.** The draft below is a starting point.
+I then ran and tested everything myself in Expo Go on my iPhone. I also used the AI to get through the problems I hit while getting the app to open on my phone: the project was on an older Expo SDK than my Expo Go, the phone couldn't connect without a tunnel, and logging in to Expo from the terminal wasn't working.
 
-I used an AI coding assistant for this project. Based on my approved proposal and the MyTasks examples from class, it generated a first version of the screens, components, Zod schemas, AsyncStorage logic, the screen-flow diagram and a draft of this README. I reviewed all of the code, ran and tested the app myself in Expo Go on my phone, and **[describe what you changed, fixed or added yourself]**. I can explain how each part works, including the reusable components and props, the state updates in `_layout.jsx`, and saving and restoring with AsyncStorage.
+[Add here, in your own words, what you changed or added yourself, and what you learned.]
 
----
+I went through the code so I can explain how it works, especially the reusable components and their props, how the list is updated when items are added, edited or deleted, and how the data is saved and loaded with AsyncStorage.
 
 ## Submitted version
 
-Final submitted commit: **`<fill in the commit hash>`** (also tagged `v1.0-submission`).
+Final submitted commit: **`<paste the commit hash here>`** (tagged `v1.0-submission`)
 
-Get the hash with `git log -1 --format=%H` after your last commit. The submitted ZIP is made from this commit and does not include `node_modules` or `.expo`.
+To get the hash after your last commit, run `git log -1 --format=%H`. The ZIP I submitted is made from this commit, without `node_modules` or `.expo`.
