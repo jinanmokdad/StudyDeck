@@ -37,7 +37,7 @@ npx expo login
 npx expo start --tunnel
 ```
 
-**Tested on:** Expo Go on an **iPhone (iOS)**. I used Expo Go, not a development build. The project uses **Expo SDK 58**, which matches the current version of Expo Go. Everything the app uses, including AsyncStorage, already comes with Expo Go.
+**Tested on:** Expo Go on an **iPhone 13 (iOS 26.6.1)**. I used Expo Go, not a development build. The project uses **Expo SDK 58**, which matches the current version of Expo Go. Everything the app uses, including AsyncStorage, already comes with Expo Go.
 
 The first time the app opens, it loads 8 sample items. After that it always loads whatever was saved last.
 
