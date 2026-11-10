@@ -28,10 +28,16 @@ export default function RootLayout() {
         return true;
     }
 
+    // Remove one item (the confirmation is shown on the Details screen).
+    async function deleteCoursework(id) {
+        setCoursework(coursework.filter((item) => item.id !== id));
+        return true;
+    }
+
     // Unique course names, offered as quick picks in the form.
     const courseNames = [...new Set(coursework.map((item) => item.course))].sort();
 
-    const contextValue = { coursework, courseNames, getCourseworkById, addCoursework, updateCoursework };
+    const contextValue = { coursework, courseNames, getCourseworkById, addCoursework, updateCoursework, deleteCoursework };
 
     return (
         <CourseworkProvider value={contextValue}>

@@ -1,7 +1,9 @@
 import { router, useLocalSearchParams } from "expo-router";
+import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import AppButton from "../../components/AppButton";
 import AppScreen from "../../components/AppScreen";
+import ConfirmDialog from "../../components/ConfirmDialog";
 import EmptyState from "../../components/EmptyState";
 import InfoRow from "../../components/InfoRow";
 import StatusBadge from "../../components/StatusBadge";
@@ -14,8 +16,12 @@ import { daysUntil, formatDate, getDueLabel } from "../../utils/dates";
 // the item itself is read from shared state, so edits show up here too.
 export default function DetailsScreen() {
     const { id } = useLocalSearchParams();
-    const { getCourseworkById } = useCoursework();
+    const { getCourseworkById, deleteCoursework } = useCoursework();
     const item = getCourseworkById(id);
+
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState("");
 
     function goBackToList() {
         if (router.canGoBack()) {
@@ -27,6 +33,24 @@ export default function DetailsScreen() {
 
     function openEdit() {
         router.push({ pathname: "/edit/[id]", params: { id: item.id } });
+    }
+
+    function askToDelete() {
+        setDeleteError("");
+        setShowDeleteDialog(true);
+    }
+
+    async function confirmDelete() {
+        setIsDeleting(true);
+        const deleted = await deleteCoursework(item.id);
+        setIsDeleting(false);
+        setShowDeleteDialog(false);
+
+        if (deleted) {
+            goBackToList();
+        } else {
+            setDeleteError("Could not delete this item. Please try again.");
+        }
     }
 
     if (!item) {
@@ -68,7 +92,20 @@ export default function DetailsScreen() {
                 <InfoRow icon="create-outline" label="Notes" value={item.notes ? item.notes : "No notes"} isLast />
             </View>
 
+            {deleteError.length > 0 && <Text style={styles.error}>{deleteError}</Text>}
+
             <AppButton text="Edit" onPress={openEdit} />
+            <AppButton text="Delete" onPress={askToDelete} variant="danger" />
+
+            <ConfirmDialog
+                visible={showDeleteDialog}
+                title="Delete coursework?"
+                message={`"${item.title}" will be removed permanently. This cannot be undone.`}
+                confirmText="Delete"
+                busy={isDeleting}
+                onConfirm={confirmDelete}
+                onCancel={() => setShowDeleteDialog(false)}
+            />
         </AppScreen>
     );
 }
@@ -82,5 +119,6 @@ const styles = StyleSheet.create({
     countdownDone: { backgroundColor: colors.success },
     countdownText: { color: colors.white, fontSize: 22, fontWeight: "800" },
     countdownSub: { color: colors.white, fontSize: 15, marginTop: 4, opacity: 0.9 },
+    error: { color: colors.danger, fontSize: 15, marginBottom: 8 },
     card: { backgroundColor: colors.card, borderRadius: 16, paddingHorizontal: 16, marginTop: 16, marginBottom: 16, borderWidth: 1, borderColor: colors.border },
 });
