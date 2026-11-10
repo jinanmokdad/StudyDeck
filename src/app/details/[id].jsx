@@ -17,12 +17,13 @@ import { daysUntil, formatDate, getDueLabel } from "../../utils/dates";
 // the item itself is read from shared state, so edits show up here too.
 export default function DetailsScreen() {
     const { id } = useLocalSearchParams();
-    const { getCourseworkById, deleteCoursework, isLoading, showMessage } = useCoursework();
+    const { getCourseworkById, updateCoursework, deleteCoursework, isLoading, showMessage } = useCoursework();
     const item = getCourseworkById(id);
 
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [deleteError, setDeleteError] = useState("");
+    const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
     function goBackToList() {
         if (router.canGoBack()) {
@@ -34,6 +35,19 @@ export default function DetailsScreen() {
 
     function openEdit() {
         router.push({ pathname: "/edit/[id]", params: { id: item.id } });
+    }
+
+    // Quick action: move the item to the next status without opening the form.
+    async function moveToNextStatus() {
+        const nextStatus = item.status === "To do" ? "In progress" : item.status === "In progress" ? "Done" : "To do";
+        setIsUpdatingStatus(true);
+        const saved = await updateCoursework(item.id, { status: nextStatus });
+        setIsUpdatingStatus(false);
+        if (saved) {
+            showMessage(`Status changed to ${nextStatus}`);
+        } else {
+            showMessage("Could not change the status. Please try again.", "error");
+        }
     }
 
     function askToDelete() {
@@ -100,7 +114,8 @@ export default function DetailsScreen() {
 
             {deleteError.length > 0 && <Text style={styles.error}>{deleteError}</Text>}
 
-            <AppButton text="Edit" onPress={openEdit} />
+            <AppButton text={getStatusButtonText(item.status)} onPress={moveToNextStatus} loading={isUpdatingStatus} />
+            <AppButton text="Edit" onPress={openEdit} variant="secondary" />
             <AppButton text="Delete" onPress={askToDelete} variant="danger" />
 
             <ConfirmDialog
@@ -114,6 +129,12 @@ export default function DetailsScreen() {
             />
         </AppScreen>
     );
+}
+
+function getStatusButtonText(status) {
+    if (status === "To do") return "Start working (In progress)";
+    if (status === "In progress") return "Mark as done";
+    return "Reopen (back to To do)";
 }
 
 const styles = StyleSheet.create({
