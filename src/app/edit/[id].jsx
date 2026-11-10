@@ -6,7 +6,7 @@ import { useCoursework } from "../../context/CourseworkContext";
 
 export default function EditCourseworkScreen() {
     const { id } = useLocalSearchParams();
-    const { getCourseworkById, updateCoursework, courseNames } = useCoursework();
+    const { getCourseworkById, updateCoursework, courseNames, showMessage } = useCoursework();
     const item = getCourseworkById(id);
 
     function goBack() {
@@ -45,6 +45,7 @@ export default function EditCourseworkScreen() {
     async function handleSave(data) {
         const saved = await updateCoursework(item.id, data);
         if (saved) {
+            showMessage("Changes saved");
             goBack(); // back to Details, which shows the updated values
         }
         return saved;

@@ -17,7 +17,7 @@ import { daysUntil, formatDate, getDueLabel } from "../../utils/dates";
 // the item itself is read from shared state, so edits show up here too.
 export default function DetailsScreen() {
     const { id } = useLocalSearchParams();
-    const { getCourseworkById, deleteCoursework, isLoading } = useCoursework();
+    const { getCourseworkById, deleteCoursework, isLoading, showMessage } = useCoursework();
     const item = getCourseworkById(id);
 
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -48,6 +48,7 @@ export default function DetailsScreen() {
         setShowDeleteDialog(false);
 
         if (deleted) {
+            showMessage(`"${item.title}" deleted`);
             goBackToList();
         } else {
             setDeleteError("Could not delete this item. Please try again.");

@@ -1,6 +1,8 @@
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
+import { View } from "react-native";
+import FeedbackBanner from "../components/FeedbackBanner";
 import colors from "../constants/colors";
 import { CourseworkProvider } from "../context/CourseworkContext";
 import mockCoursework from "../data/mockCoursework";
@@ -12,6 +14,24 @@ export default function RootLayout() {
     const [coursework, setCoursework] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [loadError, setLoadError] = useState("");
+
+    // Feedback banner shown after an action, e.g. "Coursework added".
+    const [feedback, setFeedback] = useState({ message: "", type: "success" });
+
+    function showMessage(message, type = "success") {
+        setFeedback({ message, type });
+    }
+
+    function hideMessage() {
+        setFeedback({ message: "", type: "success" });
+    }
+
+    // Hide the banner automatically after 3 seconds.
+    useEffect(() => {
+        if (!feedback.message) return;
+        const timer = setTimeout(hideMessage, 3000);
+        return () => clearTimeout(timer);
+    }, [feedback]);
 
     // Load the saved list once, when the app starts.
     useEffect(() => {
@@ -86,26 +106,30 @@ export default function RootLayout() {
         addCoursework,
         updateCoursework,
         deleteCoursework,
+        showMessage,
     };
 
     return (
         <CourseworkProvider value={contextValue}>
             <StatusBar style="light" />
-            <Stack
-                screenOptions={{
-                    headerStyle: { backgroundColor: colors.primary },
-                    headerTintColor: colors.white,
-                    headerTitleStyle: { fontWeight: "700" },
-                    contentStyle: { backgroundColor: colors.background },
-                }}
-            >
-                <Stack.Screen name="index" options={{ headerShown: false }} />
-                <Stack.Screen name="login" options={{ title: "Log in" }} />
-                <Stack.Screen name="coursework" options={{ title: "My Coursework" }} />
-                <Stack.Screen name="details/[id]" options={{ title: "Details" }} />
-                <Stack.Screen name="add" options={{ title: "Add coursework" }} />
-                <Stack.Screen name="edit/[id]" options={{ title: "Edit coursework" }} />
-            </Stack>
+            <View style={{ flex: 1 }}>
+                <Stack
+                    screenOptions={{
+                        headerStyle: { backgroundColor: colors.primary },
+                        headerTintColor: colors.white,
+                        headerTitleStyle: { fontWeight: "700" },
+                        contentStyle: { backgroundColor: colors.background },
+                    }}
+                >
+                    <Stack.Screen name="index" options={{ headerShown: false }} />
+                    <Stack.Screen name="login" options={{ title: "Log in" }} />
+                    <Stack.Screen name="coursework" options={{ title: "My Coursework" }} />
+                    <Stack.Screen name="details/[id]" options={{ title: "Details" }} />
+                    <Stack.Screen name="add" options={{ title: "Add coursework" }} />
+                    <Stack.Screen name="edit/[id]" options={{ title: "Edit coursework" }} />
+                </Stack>
+                <FeedbackBanner message={feedback.message} type={feedback.type} onDismiss={hideMessage} />
+            </View>
         </CourseworkProvider>
     );
 }
