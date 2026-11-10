@@ -10,7 +10,12 @@ export default function RootLayout() {
     // so all screens read and change the same data.
     const [coursework, setCoursework] = useState(mockCoursework);
 
-    const contextValue = { coursework };
+    // ids from the URL are strings, so compare as strings.
+    function getCourseworkById(id) {
+        return coursework.find((item) => String(item.id) === String(id));
+    }
+
+    const contextValue = { coursework, getCourseworkById };
 
     return (
         <CourseworkProvider value={contextValue}>
@@ -26,6 +31,7 @@ export default function RootLayout() {
                 <Stack.Screen name="index" options={{ headerShown: false }} />
                 <Stack.Screen name="login" options={{ title: "Log in" }} />
                 <Stack.Screen name="coursework" options={{ title: "My Coursework" }} />
+                <Stack.Screen name="details/[id]" options={{ title: "Details" }} />
             </Stack>
         </CourseworkProvider>
     );
