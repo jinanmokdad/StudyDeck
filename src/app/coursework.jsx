@@ -1,10 +1,11 @@
-import { router } from "expo-router";
+import { router, Stack } from "expo-router";
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import AppButton from "../components/AppButton";
 import AppScreen from "../components/AppScreen";
 import CourseworkCard from "../components/CourseworkCard";
 import EmptyState from "../components/EmptyState";
+import HeaderIconButton from "../components/HeaderIconButton";
 import LoadingView from "../components/LoadingView";
 import SearchBar from "../components/SearchBar";
 import StatusFilter from "../components/StatusFilter";
@@ -46,6 +47,10 @@ export default function CourseworkScreen() {
 
     function openDetails(item) {
         router.push({ pathname: "/details/[id]", params: { id: item.id } });
+    }
+
+    function openProfile() {
+        router.push("/profile");
     }
 
     function openAdd() {
@@ -107,6 +112,12 @@ export default function CourseworkScreen() {
 
     return (
         <AppScreen>
+            <Stack.Screen
+                options={{
+                    headerRight: () => <HeaderIconButton icon="person-circle-outline" label="Open profile" onPress={openProfile} />,
+                }}
+            />
+
             <View style={styles.summary}>
                 <SummaryBox label="To do" count={todoCount} />
                 <SummaryBox label="In progress" count={inProgressCount} />

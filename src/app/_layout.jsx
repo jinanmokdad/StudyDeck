@@ -123,10 +123,11 @@ export default function RootLayout() {
                 >
                     <Stack.Screen name="index" options={{ headerShown: false }} />
                     <Stack.Screen name="login" options={{ title: "Log in" }} />
-                    <Stack.Screen name="coursework" options={{ title: "My Coursework" }} />
+                    <Stack.Screen name="coursework" options={{ title: "My Coursework", headerBackVisible: false }} />
                     <Stack.Screen name="details/[id]" options={{ title: "Details" }} />
                     <Stack.Screen name="add" options={{ title: "Add coursework" }} />
                     <Stack.Screen name="edit/[id]" options={{ title: "Edit coursework" }} />
+                    <Stack.Screen name="profile" options={{ title: "Profile" }} />
                 </Stack>
                 <FeedbackBanner message={feedback.message} type={feedback.type} onDismiss={hideMessage} />
             </View>
