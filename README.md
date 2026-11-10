@@ -34,7 +34,7 @@ npx expo start
 
 Then scan the QR code with Expo Go (Android) or the Camera app (iOS). Press `a` to open an Android emulator or `i` to open an iOS simulator.
 
-**Tested with:** Expo Go on **[Android / iOS — fill in your phone model and OS version]**. Expo SDK 57 and Expo Router 57. Every library used (including `@react-native-async-storage/async-storage` 2.2.0) is bundled in Expo Go, so no development build is needed.
+**Tested with:** Expo Go on **[Android / iOS — fill in your phone model and OS version]**. Expo SDK 58 and Expo Router 58. Every library used (including `@react-native-async-storage/async-storage` 2.2.0) is bundled in Expo Go, so no development build is needed.
 
 > The first launch loads 8 sample items. After that, the app always loads what you saved. To start over with the sample data, clear the Expo Go app's storage or uninstall and reinstall the project in Expo Go.
 
