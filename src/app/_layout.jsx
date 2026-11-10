@@ -1,14 +1,56 @@
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import colors from "../constants/colors";
 import { CourseworkProvider } from "../context/CourseworkContext";
 import mockCoursework from "../data/mockCoursework";
+import { loadCoursework, saveCoursework } from "../storage/courseworkStorage";
 
 export default function RootLayout() {
     // The coursework list is kept here, in the parent of every screen,
     // so all screens read and change the same data.
-    const [coursework, setCoursework] = useState(mockCoursework);
+    const [coursework, setCoursework] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [loadError, setLoadError] = useState("");
+
+    // Load the saved list once, when the app starts.
+    useEffect(() => {
+        loadSavedCoursework();
+    }, []);
+
+    async function loadSavedCoursework() {
+        setIsLoading(true);
+        setLoadError("");
+        try {
+            const saved = await loadCoursework();
+            if (saved === null) {
+                // First launch: start with the sample data and save it.
+                setCoursework(mockCoursework);
+                await saveCoursework(mockCoursework);
+            } else {
+                // Includes [] when the user has deleted everything.
+                setCoursework(saved);
+            }
+        } catch (error) {
+            console.warn("Loading coursework failed", error);
+            setLoadError("Your saved coursework could not be loaded.");
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    // Save first, then update state. If saving fails, the screen keeps
+    // the old data and shows an error, so state and storage never disagree.
+    async function saveList(nextList) {
+        try {
+            await saveCoursework(nextList);
+            setCoursework(nextList);
+            return true;
+        } catch (error) {
+            console.warn("Saving coursework failed", error);
+            return false;
+        }
+    }
 
     // ids from the URL are strings, so compare as strings.
     function getCourseworkById(id) {
@@ -18,26 +60,33 @@ export default function RootLayout() {
     // Add a new item with the next free id.
     async function addCoursework(data) {
         const nextId = Math.max(0, ...coursework.map((item) => item.id)) + 1;
-        setCoursework([...coursework, { id: nextId, ...data }]);
-        return true;
+        return saveList([...coursework, { id: nextId, ...data }]);
     }
 
     // Replace the fields of one item, keep its id.
     async function updateCoursework(id, data) {
-        setCoursework(coursework.map((item) => (item.id === id ? { ...item, ...data } : item)));
-        return true;
+        return saveList(coursework.map((item) => (item.id === id ? { ...item, ...data } : item)));
     }
 
     // Remove one item (the confirmation is shown on the Details screen).
     async function deleteCoursework(id) {
-        setCoursework(coursework.filter((item) => item.id !== id));
-        return true;
+        return saveList(coursework.filter((item) => item.id !== id));
     }
 
     // Unique course names, offered as quick picks in the form.
     const courseNames = [...new Set(coursework.map((item) => item.course))].sort();
 
-    const contextValue = { coursework, courseNames, getCourseworkById, addCoursework, updateCoursework, deleteCoursework };
+    const contextValue = {
+        coursework,
+        courseNames,
+        isLoading,
+        loadError,
+        retryLoading: loadSavedCoursework,
+        getCourseworkById,
+        addCoursework,
+        updateCoursework,
+        deleteCoursework,
+    };
 
     return (
         <CourseworkProvider value={contextValue}>

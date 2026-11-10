@@ -6,6 +6,7 @@ import AppScreen from "../../components/AppScreen";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import EmptyState from "../../components/EmptyState";
 import InfoRow from "../../components/InfoRow";
+import LoadingView from "../../components/LoadingView";
 import StatusBadge from "../../components/StatusBadge";
 import colors from "../../constants/colors";
 import { TYPE_ICONS } from "../../constants/coursework";
@@ -16,7 +17,7 @@ import { daysUntil, formatDate, getDueLabel } from "../../utils/dates";
 // the item itself is read from shared state, so edits show up here too.
 export default function DetailsScreen() {
     const { id } = useLocalSearchParams();
-    const { getCourseworkById, deleteCoursework } = useCoursework();
+    const { getCourseworkById, deleteCoursework, isLoading } = useCoursework();
     const item = getCourseworkById(id);
 
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -51,6 +52,10 @@ export default function DetailsScreen() {
         } else {
             setDeleteError("Could not delete this item. Please try again.");
         }
+    }
+
+    if (isLoading) {
+        return <AppScreen><LoadingView /></AppScreen>;
     }
 
     if (!item) {

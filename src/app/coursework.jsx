@@ -5,6 +5,7 @@ import AppButton from "../components/AppButton";
 import AppScreen from "../components/AppScreen";
 import CourseworkCard from "../components/CourseworkCard";
 import EmptyState from "../components/EmptyState";
+import LoadingView from "../components/LoadingView";
 import SearchBar from "../components/SearchBar";
 import StatusFilter from "../components/StatusFilter";
 import colors from "../constants/colors";
@@ -15,7 +16,9 @@ const FILTER_OPTIONS = ["All", ...STATUSES];
 
 // Home screen: the list of all coursework, with search and status filter.
 export default function CourseworkScreen() {
-    const { coursework } = useCoursework();
+    const { coursework, isLoading, loadError, retryLoading } = useCoursework();
+
+    const isReady = !isLoading && !loadError;
 
     // Search text and selected filter belong only to this screen.
     const [searchText, setSearchText] = useState("");
@@ -55,6 +58,22 @@ export default function CourseworkScreen() {
     }
 
     function renderList() {
+        if (isLoading) {
+            return <LoadingView message="Loading your coursework..." />;
+        }
+
+        if (loadError) {
+            return (
+                <EmptyState
+                    icon="cloud-offline-outline"
+                    title="Something went wrong"
+                    message={loadError}
+                    actionText="Try again"
+                    onAction={retryLoading}
+                />
+            );
+        }
+
         // Nothing saved at all.
         if (coursework.length === 0) {
             return (
@@ -94,14 +113,17 @@ export default function CourseworkScreen() {
                 <SummaryBox label="Done" count={doneCount} />
             </View>
 
-            <AppButton text="+ Add coursework" onPress={openAdd} style={styles.addButton} />
+            {/* Adding is disabled until saved data has loaded, so it cannot be overwritten. */}
+            <AppButton text="+ Add coursework" onPress={openAdd} disabled={!isReady} style={styles.addButton} />
 
             <SearchBar value={searchText} onChangeText={setSearchText} placeholder="Search by title or course" />
             <StatusFilter options={FILTER_OPTIONS} selected={selectedStatus} onChange={setSelectedStatus} />
 
-            <Text style={styles.resultCount}>
-                Showing {visibleItems.length} of {coursework.length}
-            </Text>
+            {isReady && coursework.length > 0 && (
+                <Text style={styles.resultCount}>
+                    Showing {visibleItems.length} of {coursework.length}
+                </Text>
+            )}
 
             {renderList()}
         </AppScreen>
