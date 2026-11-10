@@ -152,13 +152,11 @@ Smaller pieces get their data through props. For example, `CourseworkCard` recei
 
 ## How I used AI
 
-I used an AI assistant a lot in this project. I gave it my approved proposal and the MyTasks examples from class, and it wrote the first version of most of the code (the screens, components, Zod schemas and AsyncStorage logic), the screen-flow diagram and a draft of this README.
+I completed the project using my own understanding and implementation of the concepts learned in class. I used AI as a supporting tool to help me understand certain concepts, clarify how specific parts of the code work, and troubleshoot error messages I encountered during development.
 
-I then ran and tested everything myself in Expo Go on my iPhone. I also used the AI to get through the problems I hit while getting the app to open on my phone: the project was on an older Expo SDK than my Expo Go, the phone couldn't connect without a tunnel, and logging in to Expo from the terminal wasn't working.
+I personally worked on running and testing the application using Expo Go on my iPhone. During this process, I faced several technical issues, including Expo SDK compatibility, network connection problems, and difficulties logging in through the terminal. I worked through these issues to get the application running successfully.
 
-[Add here, in your own words, what you changed or added yourself, and what you learned.]
-
-I went through the code so I can explain how it works, especially the reusable components and their props, how the list is updated when items are added, edited or deleted, and how the data is saved and loaded with AsyncStorage.
+I also reviewed the code carefully to understand how everything works, particularly the reusable components and their props, how tasks are added, edited, and deleted from the list, and how data is stored and retrieved using AsyncStorage.
 
 ## Submitted version
 
