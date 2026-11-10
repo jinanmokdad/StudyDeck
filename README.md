@@ -151,7 +151,7 @@ docs/
 
 > **Edit this section so it describes honestly how you used AI.** The draft below is a starting point.
 
-I used Claude (Anthropic) as a coding assistant for this project. Based on my approved proposal and the MyTasks examples from class, it generated a first version of the screens, components, Zod schemas, AsyncStorage logic, the screen-flow diagram and a draft of this README. I reviewed all of the code, ran and tested the app myself in Expo Go on my phone, and **[describe what you changed, fixed or added yourself]**. I can explain how each part works, including the reusable components and props, the state updates in `_layout.jsx`, and saving and restoring with AsyncStorage.
+I used an AI coding assistant for this project. Based on my approved proposal and the MyTasks examples from class, it generated a first version of the screens, components, Zod schemas, AsyncStorage logic, the screen-flow diagram and a draft of this README. I reviewed all of the code, ran and tested the app myself in Expo Go on my phone, and **[describe what you changed, fixed or added yourself]**. I can explain how each part works, including the reusable components and props, the state updates in `_layout.jsx`, and saving and restoring with AsyncStorage.
 
 ---
 
