@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import colors from "../constants/colors";
 
 // A row of filter chips. The parent owns the selected value:
@@ -7,7 +7,7 @@ import colors from "../constants/colors";
 //   onChange - callback; called with the label the user tapped
 export default function StatusFilter({ options, selected, onChange }) {
     return (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
+        <View style={styles.row}>
             {options.map((option) => {
                 const isSelected = option === selected;
                 return (
@@ -22,12 +22,12 @@ export default function StatusFilter({ options, selected, onChange }) {
                     </Pressable>
                 );
             })}
-        </ScrollView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
-    row: { gap: 8, paddingVertical: 4 },
+    row: { flexDirection: "row", flexWrap: "wrap", gap: 8, paddingVertical: 4 },
     chip: {
         paddingHorizontal: 16, minHeight: 40, justifyContent: "center", borderRadius: 999,
         backgroundColor: colors.white, borderWidth: 1, borderColor: colors.border,

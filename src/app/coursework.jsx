@@ -39,11 +39,18 @@ export default function CourseworkScreen() {
         return selectedStatus === "All" || item.status === selectedStatus;
     }
 
-    // Earliest due date first, so the most urgent work is on top.
+    // Unfinished work first, earliest due date on top; finished work at the end.
+    function compareByUrgency(a, b) {
+        const aDone = a.status === "Done";
+        const bDone = b.status === "Done";
+        if (aDone !== bDone) return aDone ? 1 : -1;
+        return a.dueDate.localeCompare(b.dueDate);
+    }
+
     const visibleItems = coursework
         .filter(matchesSearch)
         .filter(matchesStatus)
-        .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+        .sort(compareByUrgency);
 
     function openDetails(item) {
         router.push({ pathname: "/details/[id]", params: { id: item.id } });
