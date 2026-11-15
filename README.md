@@ -162,4 +162,4 @@ I also reviewed the code carefully to understand how everything works, particula
 
 Final submitted commit: **`685a4cb1a0f730a03638ba723afb73069790c80d`** (tagged `v1.0-submission`)
 
-To get the hash after your last commit, run `git log -1 --format=%H`. The ZIP I submitted is made from this commit, without `node_modules` or `.expo`.
+The submitted ZIP contains this version of the project, without `node_modules` or `.expo`. The only commit after it adds this hash to the README.
