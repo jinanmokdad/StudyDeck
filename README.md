@@ -160,6 +160,6 @@ I also reviewed the code carefully to understand how everything works, particula
 
 ## Submitted version
 
-Final submitted commit: **`<paste the commit hash here>`** (tagged `v1.0-submission`)
+Final submitted commit: **`685a4cb1a0f730a03638ba723afb73069790c80d`** (tagged `v1.0-submission`)
 
 To get the hash after your last commit, run `git log -1 --format=%H`. The ZIP I submitted is made from this commit, without `node_modules` or `.expo`.
